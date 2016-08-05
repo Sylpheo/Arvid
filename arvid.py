@@ -19,12 +19,12 @@ def check_objects(obj1, obj2):
     depth += 1
     if isinstance(obj1, dict) and isinstance(obj2, dict):
         if obj1 != obj2:
+            res = False
             for k in obj1.keys():
                 try:
                     if (obj1[k] != obj2[k]):
                         print(indent*depth + k + ':')
                         # print('key : ' + k)
-                        res = False
                         check_objects(obj1[k], obj2[k])
                 except KeyError:
                     print(indent*depth + bcolors.DELETED + k + ':' + str(obj1[k]) + bcolors.ENDC)
@@ -34,7 +34,7 @@ def check_objects(obj1, obj2):
                     obj1[k]
                 except KeyError:
                     print(indent*depth + bcolors.ADDED + k + ':' + str(obj2[k]) + bcolors.ENDC)
-        else:
+        elif depth > 1: #pourrrriiiiiiiiiiiiiiiiii
             print(indent*depth + bcolors.SAME + "identical"+ bcolors.ENDC)
     elif isinstance(obj1, list) and isinstance(obj2, list):
         check_lists(obj1, obj2)
