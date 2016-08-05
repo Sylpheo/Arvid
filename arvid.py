@@ -7,7 +7,9 @@ class bcolors:
     ADDED = '\033[92m'
     MODIFIED = '\033[93m'
     DELETED = '\033[91m'
+    NAME = '\033[94m'
     ENDC = '\033[0m'
+    SAME = '\033[96m'
 
 
 
@@ -16,45 +18,58 @@ def check_objects(obj1, obj2):
     global depth
     depth += 1
     if isinstance(obj1, dict) and isinstance(obj2, dict):
-        if len(list(obj1.keys())) >= len(list(obj2.keys())):
-            left_obj = obj1
-            right_obj = obj2
+        if obj1 != obj2:
+            for k in obj1.keys():
+                try:
+                    if (obj1[k] != obj2[k]):
+                        print(indent*depth + k + ':')
+                        # print('key : ' + k)
+                        res = False
+                        check_objects(obj1[k], obj2[k])
+                except KeyError:
+                    print(indent*depth + bcolors.DELETED + k + ':' + str(obj1[k]) + bcolors.ENDC)
+
+            for k in obj2.keys():
+                try:
+                    obj1[k]
+                except KeyError:
+                    print(indent*depth + bcolors.ADDED + k + ':' + str(obj2[k]) + bcolors.ENDC)
         else:
-            left_obj = obj2
-            right_obj = obj1
-        for k in left_obj.keys():
-            try:
-                if (left_obj[k] != right_obj[k]):
-                    print(indent*depth+k+':')
-                    # print('key : ' + k)
-                    res = False
-                    check_objects(obj1[k], obj2[k])
-            except KeyError:
-                if left_obj == obj1:
-                        color = bcolors.DELETED
-                elif left_obj == obj2:
-                        color = bcolors.ADDED
-                print(indent*depth+color +  k + '/'+str(left_obj[k]) + bcolors.ENDC)
+            print(indent*depth + bcolors.SAME + "identical"+ bcolors.ENDC)
     elif isinstance(obj1, list) and isinstance(obj2, list):
         check_lists(obj1, obj2)
     else:
-        print(indent*depth+bcolors.MODIFIED + str(obj1) +bcolors.ENDC+ " |vs| " + bcolors.MODIFIED+str(obj2)+ bcolors.ENDC)
+        print(indent*depth + bcolors.MODIFIED + str(obj1) + bcolors.ENDC + " |vs| " + bcolors.MODIFIED + str(obj2) + bcolors.ENDC)
     depth -= 1
     return res
 
 def check_lists(list1, list2):
-    for i in list1:
-        for j in list2:
-            if (isinstance(i, dict)) and isinstance(j,dict):
-                try:
-                    if i['object_name'] == j['object_name']:
-                        check_objects(i,j)
-                except KeyError:
-                    print('\'object_name\' key not found, this is probably not a correct conf file !')
-                    break
 
+    iterate(list1, list2, True)
+    iterate(list2, list1, False)
 
-
+def iterate(list1, list2, first_time):
+        for i in list1:
+            flag = False
+            if isinstance(i,dict):
+                for j in list2:
+                    if isinstance(j,dict):
+                        try:
+                            if i['object_name'] == j['object_name']:
+                                flag = True
+                                if first_time == True:
+                                    print(bcolors.NAME + depth*indent + i['object_name'] + ' : ' + bcolors.ENDC)
+                                    check_objects(i,j)
+                        except KeyError:
+                            print('\'object_name\' key not found, fist file is probably not a correct conf file !')
+                            break
+                # si on trouve pas l'objet de l'autre côté
+                if flag == False:
+                    if first_time == True:
+                        color = bcolors.DELETED
+                    else:
+                        color = bcolors.ADDED
+                    print(color + depth*indent + i['object_name'] + bcolors.ENDC)
 
 
 
