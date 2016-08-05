@@ -27,19 +27,43 @@ def check_objects(obj1, obj2):
                         # print('key : ' + k)
                         check_objects(obj1[k], obj2[k])
                 except KeyError:
-                    print(indent*depth + bcolors.DELETED + k + ':' + str(obj1[k]) + bcolors.ENDC)
+                    if args.o == False:
+                        color = bcolors.DELETED
+                        color_end = bcolors.ENDC
+                    else:
+                        color = 'DELETED : '
+                        color_end = ''
+                    print(indent*depth + color + k + ':' + str(obj1[k]) + color_end)
 
             for k in obj2.keys():
                 try:
                     obj1[k]
                 except KeyError:
-                    print(indent*depth + bcolors.ADDED + k + ':' + str(obj2[k]) + bcolors.ENDC)
+                    if args.o == False:
+                        color = bcolors.ADDED
+                        color_end = bcolors.ENDC
+                    else:
+                        color = 'ADDED : '
+                        color_end = ''
+                    print(indent*depth + color + k + ':' + str(obj2[k]) + color_end)
         elif depth > 1: #pourrrriiiiiiiiiiiiiiiiii
-            print(indent*depth + bcolors.SAME + "identical"+ bcolors.ENDC)
+            if args.o == False:
+                color = bcolors.SAME
+                color_end = bcolors.ENDC
+            else:
+                color = ''
+                color_end = ''
+            print(indent*depth + color + "identical"+ color_end)
     elif isinstance(obj1, list) and isinstance(obj2, list):
         check_lists(obj1, obj2)
     else:
-        print(indent*depth + bcolors.MODIFIED + str(obj1) + bcolors.ENDC + " |vs| " + bcolors.MODIFIED + str(obj2) + bcolors.ENDC)
+        if args.o == False:
+            color = bcolors.MODIFIED
+            color_end = bcolors.ENDC
+        else:
+            color = ''
+            color_end = ''
+        print(indent*depth + color + str(obj1) + color_end + " |vs| " + color + str(obj2) + color_end)
     depth -= 1
     return res
 
@@ -58,23 +82,35 @@ def iterate(list1, list2, first_time):
                             if i['object_name'] == j['object_name']:
                                 flag = True
                                 if first_time == True:
-                                    print(bcolors.NAME + depth*indent + i['object_name'] + ' : ' + bcolors.ENDC)
+                                    if args.o == False:
+                                        color = bcolors.NAME
+                                        color_end = bcolors.ENDC
+                                    else:
+                                        color = ''
+                                        color_end = ''
+                                    print(color + depth*indent + i['object_name'] + ' : ' + color_end)
                                     check_objects(i,j)
                         except KeyError:
                             print('\'object_name\' key not found, fist file is probably not a correct conf file !')
                             break
                 # si on trouve pas l'objet de l'autre côté
                 if flag == False:
-                    if first_time == True:
-                        color = bcolors.DELETED
+                    if args.o == False:
+                        if first_time == True:
+                            color = bcolors.DELETED
+                        else:
+                            color = bcolors.ADDED
+                        color_end = bcolors.ENDC
                     else:
-                        color = bcolors.ADDED
-                    print(color + depth*indent + i['object_name'] + bcolors.ENDC)
+                        color = 'ADDED : '
+                        color_end = ''
+                    print(color + depth*indent + i['object_name'] + color_end)
 
 
 
 parser = argparse.ArgumentParser(description='Compare two conf files')
 parser.add_argument('files', metavar='file.json', nargs=2, help='a file to compare')
+parser.add_argument('-o', nargs='?', const=True, default=False, help='use it if you redirect the output to a file')
 args = parser.parse_args()
 file1_name = args.files[0]
 file2_name = args.files[1]
