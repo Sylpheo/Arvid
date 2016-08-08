@@ -167,6 +167,14 @@ def main():
     depth = -1 # used to count the indentation depth
     global indent
     indent = ' ' # identation symbol
+
+    print("\n** ARVID ** \n")
+    print("Everything is relative to the first file !\n")
+    print("In "+bcolors.ADDED+"green"+bcolors.ENDC+" : what is added")
+    print("In "+bcolors.DELETED+"red"+bcolors.ENDC+" : what is removed")
+    print("In "+bcolors.MODIFIED+"yellow"+bcolors.ENDC+" : what is modified")
+    print("In "+bcolors.NAME+"blue"+bcolors.ENDC+" : name of the objects\n")
+
     is_identical = check_objects(file1,file2)
     if is_identical:
         print('The files are identical !')
