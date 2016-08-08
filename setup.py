@@ -2,12 +2,12 @@
 
 from setuptools import setup, find_packages
 
-import arvid
+import Arvid
 
 setup(
 	name='arvid',
 
-	version=arvid.__version__,
+	version=Arvid.__version__,
 
 	packages=find_packages(),
 
@@ -29,7 +29,7 @@ setup(
 
 	entry_points = {
 		'console_scripts': [
-			'arvid = arvid.arvid:main',
+			'arvid = Arvid.arvid:main',
 		]
 	},
 
